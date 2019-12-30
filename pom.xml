@@ -40,6 +40,7 @@
 	<modules>
 		<module>flashSale-webapp-demo</module>
 		<module>flashSale-server-demo</module>
+		<module>flashSale-api-demo</module>
 	</modules>
 
 	<build>
