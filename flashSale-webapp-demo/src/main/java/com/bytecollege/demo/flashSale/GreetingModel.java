@@ -1,11 +1,11 @@
 package com.bytecollege.demo.flashSale;
 
-public class Greeting {
+public class GreetingModel {
 
 	private final long id;
 	private final String content;
 
-	public Greeting(long id, String content) {
+	public GreetingModel(long id, String content) {
 		this.id = id;
 		this.content = content;
 	}

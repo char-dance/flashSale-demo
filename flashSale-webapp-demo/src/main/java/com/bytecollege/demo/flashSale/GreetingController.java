@@ -16,9 +16,9 @@ public class GreetingController {
 	private GreetingService greetingService;
 
 	@GetMapping("/greeting")
-	public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
+	public GreetingModel greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
 		String greeting = greetingService.greet(name);
 		long id = counter.incrementAndGet();
-		return new Greeting(id, greeting);
+		return new GreetingModel(id, greeting);
 	}
 }
