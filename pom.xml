@@ -39,8 +39,10 @@
 
 	<modules>
 		<module>flashSale-webapp-demo</module>
-		<module>flashSale-server-demo</module>
+		<module>flashSale-service-demo</module>
 		<module>flashSale-api-demo</module>
+		<module>checkout-service-demo</module>
+		<module>checkout-api-demo</module>
 	</modules>
 
 	<build>
