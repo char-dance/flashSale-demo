@@ -13,11 +13,11 @@ public class GreetingController {
 	private final AtomicLong counter = new AtomicLong();
 
 	@Reference(version = "1.0.0", timeout = 3000)
-	private GreetingService greetingService;
+	private FlashSaleService flashSaleService;
 
 	@GetMapping("/greeting")
 	public GreetingModel greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
-		String greeting = greetingService.greet(name);
+		String greeting = flashSaleService.greet(name);
 		long id = counter.incrementAndGet();
 		return new GreetingModel(id, greeting);
 	}

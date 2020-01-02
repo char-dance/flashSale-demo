@@ -10,10 +10,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan("com.bytecollege.demo.flashSale.dao")
 @EnableDubbo(scanBasePackages="com.bytecollege.demo.flashSale")
 @SpringBootApplication
-public class FlashSaleServerDemoApplication {
+public class FlashSaleServiceDemoApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FlashSaleServerDemoApplication.class, args);
+		SpringApplication.run(FlashSaleServiceDemoApplication.class, args);
 	}
 	
 }

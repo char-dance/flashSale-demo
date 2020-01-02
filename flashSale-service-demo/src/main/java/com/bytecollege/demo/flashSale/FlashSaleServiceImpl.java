@@ -2,22 +2,27 @@ package com.bytecollege.demo.flashSale;
 
 import java.time.LocalTime;
 
+import org.apache.dubbo.config.annotation.Reference;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
+import com.bytecollege.demo.checkout.CheckoutService;
 import com.bytecollege.demo.flashSale.dao.GreetingEntity;
 import com.bytecollege.demo.flashSale.dao.GreetingMapper;
 
 @Service(version = "1.0.0", timeout = 3000)
-public class GreetingServiceImpl implements GreetingService {
+public class FlashSaleServiceImpl implements FlashSaleService {
 	private static final String TEMPLATE = "Good %s, %s! This is %s";
 
 	@Autowired
 	private StringRedisTemplate redisTemplate;
 
 	@Autowired
-	GreetingMapper greetingMapper;
+	private GreetingMapper greetingMapper;
+
+	@Reference(version = "1.0.0", timeout = 3000)
+	private CheckoutService checkoutService;
 
 	@Override
 	public String greet(String name) {
@@ -32,6 +37,11 @@ public class GreetingServiceImpl implements GreetingService {
 		// 根据时间返回morning，noon,afternoon，evening，night
 		int hour = LocalTime.now().getHour();
 		return String.format(TEMPLATE, generate(hour), name, content);
+	}
+	
+	@Override
+	public FlashSaleResp checkout(FlashSaleReq req) {
+		return new FlashSaleResp();
 	}
 
 	private String generate(int hour) {
