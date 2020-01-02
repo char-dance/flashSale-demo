@@ -1,19 +1,23 @@
 package com.bytecollege.demo.flashSale;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.dubbo.config.annotation.Reference;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
+import com.bytecollege.demo.checkout.CheckoutReq;
+import com.bytecollege.demo.checkout.CheckoutResp;
 import com.bytecollege.demo.checkout.CheckoutService;
 import com.bytecollege.demo.flashSale.dao.GreetingEntity;
 import com.bytecollege.demo.flashSale.dao.GreetingMapper;
 
 @Service(version = "1.0.0", timeout = 3000)
 public class FlashSaleServiceImpl implements FlashSaleService {
-	private static final String TEMPLATE = "Good %s, %s! This is %s";
+	private static final Log log = LogFactory.getLog(FlashSaleServiceImpl.class);
 
 	@Autowired
 	private StringRedisTemplate redisTemplate;
@@ -25,7 +29,13 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 	private CheckoutService checkoutService;
 
 	@Override
-	public String greet(String name) {
+	public FlashSaleResp checkout(FlashSaleReq req) {
+		log.info("========================" + req);
+
+		long id = req.getId();
+		String itemId = req.getItemId();
+		LocalDateTime requestTime = req.getRequestTime();
+
 		redisTemplate.opsForValue().set("foo", "bar");
 		String value = redisTemplate.opsForValue().get("foo");
 		System.out.println("value======================================" + value);
@@ -34,27 +44,14 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		String content = greetingEntity.getContent();
 		System.out.println("content======================================" + content);
 
-		// 根据时间返回morning，noon,afternoon，evening，night
-		int hour = LocalTime.now().getHour();
-		return String.format(TEMPLATE, generate(hour), name, content);
-	}
-	
-	@Override
-	public FlashSaleResp checkout(FlashSaleReq req) {
-		return new FlashSaleResp();
+		CheckoutReq checkoutReq = new CheckoutReq(id, itemId);
+		CheckoutResp checkoutResp = checkoutService.checkout(checkoutReq);
+
+		FlashSaleResp resp = new FlashSaleResp(id, itemId, checkoutResp.getOrderId(), checkoutResp.isSuccess(),
+				checkoutResp.getCheckoutTime());
+		log.info("========================" + resp);
+		
+		return resp;
 	}
 
-	private String generate(int hour) {
-		String ret = "morning";
-		if (hour >= 11 && hour < 13) {
-			return "noon"; // 11-13
-		} else if (hour >= 13 && hour < 18) {
-			return "afternoon"; // 13-18
-		} else if (hour >= 18 && hour < 21) {
-			return "evening"; // 18-21
-		} else if (hour >= 21 && hour <= 23) {
-			return "night"; // 21-24
-		}
-		return ret;
-	}
 }

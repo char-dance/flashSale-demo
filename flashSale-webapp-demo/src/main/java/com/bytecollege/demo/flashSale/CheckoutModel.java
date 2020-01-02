@@ -2,12 +2,14 @@ package com.bytecollege.demo.flashSale;
 
 public class CheckoutModel {
 
-	private final long id;
-	private final String content;
+	private long id;
+	private String itemId;
+	private String resultMsg;
 
-	public CheckoutModel(long id, String content) {
+	public CheckoutModel(long id, String itemId, String resultMsg) {
 		this.id = id;
-		this.content = content;
+		this.itemId = itemId;
+		this.resultMsg = resultMsg;
 	}
 
 	public long getId() {
@@ -15,6 +17,10 @@ public class CheckoutModel {
 	}
 
 	public String getContent() {
-		return content;
+		return itemId;
+	}
+
+	public String getResultMsg() {
+		return resultMsg;
 	}
 }
