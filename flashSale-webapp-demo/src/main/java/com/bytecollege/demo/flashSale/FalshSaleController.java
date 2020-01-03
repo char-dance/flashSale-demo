@@ -7,7 +7,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -20,17 +19,20 @@ public class FalshSaleController {
 	@Reference(version = "1.0.0", timeout = 3000)
 	private FlashSaleService flashSaleService;
 
-	// http://localhost:8080/flashSale?itemId=ABCDEF
+	// http://localhost:8080/flashSale/checkout?itemId=ABCDEF&userId=ruanwei
 	@GetMapping("/checkout")
-	public CheckoutModel checkout(@RequestParam(value = "itemId", defaultValue = "ABC123") String itemId) {
-		log.info("========================" + itemId);
+	public CheckoutModel checkout(CheckoutCommand command) {
+		log.info("========================" + command);
 		long id = counter.incrementAndGet();
-		FlashSaleReq flashSaleReq = new FlashSaleReq(id, itemId);
-		
-		FlashSaleResp flashSaleResp = flashSaleService.checkout(flashSaleReq);
-		String resultMsg = "checkout " + (flashSaleResp.isSuccess() ? "succeed" : "failed");
-		log.info("========================" + flashSaleResp);
+		FlashSaleReq req = new FlashSaleReq(id, command.getItemId());
+		log.info("========================" + req);
 
-		return new CheckoutModel(flashSaleResp.getId(), flashSaleResp.getItemId(), resultMsg);
+		FlashSaleResp resp = flashSaleService.checkout(req);
+		String resultMsg = "checkout " + (resp.isSuccess() ? "succeed" : "failed");
+		log.info("========================" + resp);
+
+		CheckoutModel model = new CheckoutModel(resp.getId(), resp.getItemId(), resultMsg);
+		log.info("========================" + model);
+		return model;
 	}
 }

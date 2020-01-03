@@ -16,11 +16,16 @@ public class CheckoutModel {
 		return id;
 	}
 
-	public String getContent() {
+	public String getItemId() {
 		return itemId;
 	}
 
 	public String getResultMsg() {
 		return resultMsg;
+	}
+
+	@Override
+	public String toString() {
+		return "CheckoutModel [id=" + id + ", itemId=" + itemId + ", resultMsg=" + resultMsg + "]";
 	}
 }
