@@ -1,8 +1,10 @@
 package com.bytecollege.demo.flashSale;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class FlashSaleResp {
+@SuppressWarnings("serial")
+public class FlashSaleResp implements Serializable {
 	private long id;
 	private String itemId;
 	private String orderId;

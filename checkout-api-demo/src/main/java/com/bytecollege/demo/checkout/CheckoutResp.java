@@ -1,8 +1,10 @@
 package com.bytecollege.demo.checkout;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class CheckoutResp {
+@SuppressWarnings("serial")
+public class CheckoutResp implements Serializable {
 	private long id;
 	private String itemId;
 	private String orderId;

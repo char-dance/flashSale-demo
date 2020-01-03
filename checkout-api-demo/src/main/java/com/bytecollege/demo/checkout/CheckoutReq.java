@@ -1,6 +1,9 @@
 package com.bytecollege.demo.checkout;
 
-public class CheckoutReq {
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public class CheckoutReq implements Serializable {
 	private long id;
 	private String itemId;
 

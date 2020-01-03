@@ -38,11 +38,11 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 
 		redisTemplate.opsForValue().set("foo", "bar");
 		String value = redisTemplate.opsForValue().get("foo");
-		System.out.println("value======================================" + value);
+		System.out.println("value from redis======================================" + value);
 
 		GreetingEntity greetingEntity = greetingMapper.getContentById(1);
 		String content = greetingEntity.getContent();
-		System.out.println("content======================================" + content);
+		System.out.println("value from mysql======================================" + content);
 
 		CheckoutReq checkoutReq = new CheckoutReq(id, itemId);
 		CheckoutResp checkoutResp = checkoutService.checkout(checkoutReq);
