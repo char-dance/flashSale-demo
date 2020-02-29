@@ -8,23 +8,23 @@ import lombok.Data;
 @SuppressWarnings("serial")
 public class FlashSaleResp implements Serializable {
 	private String itemId;
-	private int userId;
+	private String userId;
 	private String orderId;
-	private boolean success;
-	private int seqId;
+	private int code;
+	private String message;
 
 	public FlashSaleResp() {
-		this.seqId = 8888;
 		this.itemId = "8888";
 		this.orderId = "8888";
-		this.success = true;
+		this.message = "failed";
+		this.code = -1;
 	}
 
-	public FlashSaleResp(String itemId, int userId, String orderId, boolean success, int seqId) {
+	public FlashSaleResp(String itemId, String userId, String orderId, int code, String message) {
 		this.itemId = itemId;
 		this.userId = userId;
 		this.orderId = orderId;
-		this.success = success;
-		this.seqId = seqId;
+		this.code = code;
+		this.message = message;
 	}
 }

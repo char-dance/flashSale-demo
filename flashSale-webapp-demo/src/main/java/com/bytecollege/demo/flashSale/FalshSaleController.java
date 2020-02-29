@@ -23,15 +23,15 @@ public class FalshSaleController {
 	@GetMapping("/flash")
 	public FlashSaleModel flash(FlashSaleCommand command) {
 		log.info("========================" + command);
-
 		int seqId = seq.incrementAndGet();
-		FlashSaleReq req = new FlashSaleReq(command.getItemId(), command.getUserId(), seqId);
 
+		FlashSaleReq req = new FlashSaleReq(command.getItemId(), command.getUserId());
 		FlashSaleResp resp = flashSaleService.flash(req);
+		log.info("========================" + req);
 		log.info("========================" + resp);
 
-		String resultMsg = "flash " + (resp.isSuccess() ? "succeed" : "failed");
-		FlashSaleModel model = new FlashSaleModel(resp.getItemId(), resp.getUserId(), resultMsg, resp.getSeqId());
+		FlashSaleModel model = new FlashSaleModel(resp.getItemId(), resp.getUserId(), resp.getOrderId(), resp.getCode(),
+				resp.getMessage());
 		log.info("========================" + model);
 		return model;
 	}

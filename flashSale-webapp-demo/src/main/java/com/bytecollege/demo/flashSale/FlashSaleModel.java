@@ -7,17 +7,19 @@ import lombok.Data;
 @Data
 public class FlashSaleModel {
 	private String itemId;
-	private int userId;
-	private String resultMsg;
+	private String userId;
+	private String orderId;
 	private LocalDateTime responseTime;
-	private int seqId;
+	private int code;
+	private String message;
 
-	public FlashSaleModel(String itemId, int userId, String resultMsg, int seqId) {
+	public FlashSaleModel(String itemId, String userId, String orderId, int code, String message) {
 		this.itemId = itemId;
 		this.userId = userId;
-		this.resultMsg = resultMsg;
+		this.orderId = orderId;
 		this.responseTime = LocalDateTime.now();
-		this.seqId = seqId;
+		this.code = code;
+		this.message = message;
 	}
 
 }

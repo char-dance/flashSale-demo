@@ -15,22 +15,24 @@ public class CheckoutServiceImpl implements CheckoutService {
 	public CheckoutResp checkout(CheckoutReq req) {
 		log.info("========================" + req);
 
+		int code = 0;
+		String message = "checkout sucess";
+
 		try {
 			TimeUnit.MILLISECONDS.sleep(100);
 		} catch (InterruptedException e) {
 			log.error("", e);
-		} finally {
-
+			code = -11;
+			message = "checkout failed as sleep";
 		}
 
-		int seqId = req.getSeqId();
-		boolean success = seqId % 9 == 0 ? false : true;
-		CheckoutResp resp = new CheckoutResp(req.getItemId(), req.getUserId(), UUID.randomUUID().toString(), success,
-				req.getSeqId());
-		log.info("========================" + resp);
+		int i = (int) (System.nanoTime() % 9);
+		if (i == 8) {
+			code = -10;
+			message = "checkout falied";
+		}
 
-		return resp;
-
+		return new CheckoutResp(req.getItemId(), req.getUserId(), UUID.randomUUID().toString(), code, message);
 	}
 
 }

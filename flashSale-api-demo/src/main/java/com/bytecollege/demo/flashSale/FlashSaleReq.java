@@ -8,12 +8,10 @@ import lombok.Data;
 @SuppressWarnings("serial")
 public class FlashSaleReq implements Serializable {
 	private String itemId;
-	private int userId;
-	private int seqId;
+	private String userId;
 
-	public FlashSaleReq(String itemId, int userId, int seqId) {
+	public FlashSaleReq(String itemId, String userId) {
 		this.itemId = itemId;
 		this.userId = userId;
-		this.seqId = seqId;
 	}
 }

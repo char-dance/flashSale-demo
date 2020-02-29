@@ -24,7 +24,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 	@Autowired
 	private StringRedisTemplate stringRedisTemplate;
 
-	@Autowired
+	// @Autowired
 	private RedisTemplate<String, Integer> flashSaleRedisTemplate;
 
 	@Autowired
@@ -39,34 +39,47 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 	public FlashSaleResp flash(FlashSaleReq req) {
 		log.info("========================" + req);
 
+		String itemId = req.getItemId();
+		String userId = req.getUserId();
+
 		// 1.检查库存
-		checkStock(req.getItemId());
+		int stock = checkStock(itemId);
+		if (stock <= 0) {
+			return new FlashSaleResp(itemId, userId, "NoOrder", -1, "stock is unavailable");
+		}
 
 		// 2.下单
-		CheckoutReq checkoutReq = new CheckoutReq(req.getItemId(), req.getUserId(), req.getSeqId());
+		CheckoutReq checkoutReq = new CheckoutReq(itemId, userId);
 		CheckoutResp checkoutResp = checkoutService.checkout(checkoutReq);
+		log.info("========================" + checkoutReq);
+		log.info("========================" + checkoutResp);
+
+		if (checkoutResp.getCode() < 0) {
+			return new FlashSaleResp(itemId, userId, checkoutResp.getOrderId(), -2, checkoutResp.getMessage());
+		}
 
 		// 3.扣减库存
-		stringRedisTemplate.opsForValue().set("foo", "bar");
-		String value = stringRedisTemplate.opsForValue().get("foo");
-		System.out.println("value from redis======================================" + value);
+		stringRedisTemplate.delete(itemId);
+		flashSaleMapper.updateStock(itemId, 1);
 
 		// 返回响应
-		FlashSaleResp resp = new FlashSaleResp(checkoutResp.getItemId(), checkoutResp.getUserId(),
-				checkoutResp.getOrderId(), checkoutResp.isSuccess(), checkoutResp.getSeqId());
-		log.info("========================" + resp);
-		return resp;
+		return new FlashSaleResp(itemId, userId, checkoutResp.getOrderId(), checkoutResp.getCode(),
+				"flash sale success");
 	}
 
 	private int checkStock(String itemId) {
-		// String stock = stringRedisTemplate.opsForValue().get(itemId);
-		Integer stock = flashSaleRedisTemplate.opsForValue().get(itemId);
+		String stock = stringRedisTemplate.opsForValue().get(itemId);
+		// Integer stock = flashSaleRedisTemplate.opsForValue().get(itemId);
+		log.info("stock from redis======================================" + stock);
 		if (stock == null) {
 			ItemEntity itemEntity = flashSaleMapper.getItem(itemId);
-			stock = itemEntity.getStock();
-			System.out.println("stock from mysql======================================" + stock);
+			stock = itemEntity.getStock() + "";
+
+			log.info("stock from mysql======================================" + stock);
+			stringRedisTemplate.opsForValue().set(itemId, stock);
 		}
-		return stock;
+
+		return Integer.parseInt(stock);
 	}
 
 }
