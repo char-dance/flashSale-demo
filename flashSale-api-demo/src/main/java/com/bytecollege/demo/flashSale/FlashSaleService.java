@@ -2,7 +2,7 @@ package com.bytecollege.demo.flashSale;
 
 public interface FlashSaleService {
 
-	default FlashSaleResp checkout(FlashSaleReq req) {
+	default FlashSaleResp flash(FlashSaleReq req) {
 		return new FlashSaleResp();
 	}
 

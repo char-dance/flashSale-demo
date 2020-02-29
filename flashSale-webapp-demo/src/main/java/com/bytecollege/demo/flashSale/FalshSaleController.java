@@ -1,6 +1,6 @@
 package com.bytecollege.demo.flashSale;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,24 +14,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class FalshSaleController {
 	private static final Log log = LogFactory.getLog(FalshSaleController.class);
 
-	private final AtomicLong counter = new AtomicLong();
+	private final AtomicInteger seq = new AtomicInteger();
 
 	@Reference(version = "1.0.0", timeout = 3000)
 	private FlashSaleService flashSaleService;
 
-	// http://localhost:8080/flashSale/checkout?itemId=ABCDEF&userId=ruanwei
-	@GetMapping("/checkout")
-	public CheckoutModel checkout(CheckoutCommand command) {
+	// http://localhost:8080/flashSale/flash?itemId=1A2B3C4D5E6F&userId=ruanwei
+	@GetMapping("/flash")
+	public FlashSaleModel flash(FlashSaleCommand command) {
 		log.info("========================" + command);
-		long id = counter.incrementAndGet();
-		FlashSaleReq req = new FlashSaleReq(id, command.getItemId());
-		log.info("========================" + req);
 
-		FlashSaleResp resp = flashSaleService.checkout(req);
-		String resultMsg = "checkout " + (resp.isSuccess() ? "succeed" : "failed");
+		int seqId = seq.incrementAndGet();
+		FlashSaleReq req = new FlashSaleReq(command.getItemId(), command.getUserId(), seqId);
+
+		FlashSaleResp resp = flashSaleService.flash(req);
 		log.info("========================" + resp);
 
-		CheckoutModel model = new CheckoutModel(resp.getId(), resp.getItemId(), resultMsg);
+		String resultMsg = "flash " + (resp.isSuccess() ? "succeed" : "failed");
+		FlashSaleModel model = new FlashSaleModel(resp.getItemId(), resp.getUserId(), resultMsg, resp.getSeqId());
 		log.info("========================" + model);
 		return model;
 	}

@@ -2,27 +2,18 @@ package com.bytecollege.demo.checkout;
 
 import java.io.Serializable;
 
+import lombok.Data;
+
+@Data
 @SuppressWarnings("serial")
 public class CheckoutReq implements Serializable {
-	private long id;
 	private String itemId;
+	private int userId;
+	private int seqId;
 
-	public CheckoutReq(long id, String itemId) {
-		this.id = id;
+	public CheckoutReq(String itemId, int userId, int seqId) {
 		this.itemId = itemId;
+		this.userId = userId;
+		this.seqId = seqId;
 	}
-
-	public long getId() {
-		return id;
-	}
-
-	public String getItemId() {
-		return itemId;
-	}
-
-	@Override
-	public String toString() {
-		return "CheckoutReq [id=" + id + ", itemId=" + itemId + "]";
-	}
-
 }

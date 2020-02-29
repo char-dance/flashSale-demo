@@ -1,56 +1,30 @@
 package com.bytecollege.demo.flashSale;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
+import lombok.Data;
+
+@Data
 @SuppressWarnings("serial")
 public class FlashSaleResp implements Serializable {
-	private long id;
 	private String itemId;
+	private int userId;
 	private String orderId;
 	private boolean success;
-	private LocalDateTime checkoutTime;
+	private int seqId;
 
 	public FlashSaleResp() {
-		this.id = 8888;
+		this.seqId = 8888;
 		this.itemId = "8888";
 		this.orderId = "8888";
 		this.success = true;
-		this.checkoutTime = LocalDateTime.now();
 	}
 
-	public FlashSaleResp(long id, String itemId, String orderId, boolean success,LocalDateTime checkoutTime) {
-		this.id = id;
+	public FlashSaleResp(String itemId, int userId, String orderId, boolean success, int seqId) {
 		this.itemId = itemId;
+		this.userId = userId;
 		this.orderId = orderId;
 		this.success = success;
-		this.checkoutTime = checkoutTime;
+		this.seqId = seqId;
 	}
-
-	public long getId() {
-		return id;
-	}
-
-	public String getItemId() {
-		return itemId;
-	}
-
-	public String getOrderId() {
-		return orderId;
-	}
-
-	public boolean isSuccess() {
-		return success;
-	}
-
-	public LocalDateTime getCheckoutTime() {
-		return checkoutTime;
-	}
-
-	@Override
-	public String toString() {
-		return "FlashSaleResp [id=" + id + ", itemId=" + itemId + ", orderId=" + orderId + ", success=" + success
-				+ ", checkoutTime=" + checkoutTime + "]";
-	}
-
 }

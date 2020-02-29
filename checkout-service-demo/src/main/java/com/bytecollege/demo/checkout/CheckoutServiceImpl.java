@@ -1,6 +1,7 @@
 package com.bytecollege.demo.checkout;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,15 +15,22 @@ public class CheckoutServiceImpl implements CheckoutService {
 	public CheckoutResp checkout(CheckoutReq req) {
 		log.info("========================" + req);
 
-		long id = req.getId();
-		String itemId = req.getItemId();
-		String orderId = UUID.randomUUID().toString();
-		boolean success = id % 9 == 0 ? false : true;
+		try {
+			TimeUnit.MILLISECONDS.sleep(100);
+		} catch (InterruptedException e) {
+			log.error("", e);
+		} finally {
 
-		CheckoutResp resp = new CheckoutResp(id, itemId, orderId, success);
+		}
+
+		int seqId = req.getSeqId();
+		boolean success = seqId % 9 == 0 ? false : true;
+		CheckoutResp resp = new CheckoutResp(req.getItemId(), req.getUserId(), UUID.randomUUID().toString(), success,
+				req.getSeqId());
 		log.info("========================" + resp);
 
 		return resp;
+
 	}
 
 }

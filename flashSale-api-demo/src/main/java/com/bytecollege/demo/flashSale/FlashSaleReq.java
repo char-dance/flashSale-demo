@@ -1,35 +1,19 @@
 package com.bytecollege.demo.flashSale;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
+import lombok.Data;
+
+@Data
 @SuppressWarnings("serial")
 public class FlashSaleReq implements Serializable {
-	private long id;
 	private String itemId;
-	private LocalDateTime requestTime;
+	private int userId;
+	private int seqId;
 
-	public FlashSaleReq(long id, String itemId) {
-		this.id = id;
+	public FlashSaleReq(String itemId, int userId, int seqId) {
 		this.itemId = itemId;
-		this.requestTime = LocalDateTime.now();
+		this.userId = userId;
+		this.seqId = seqId;
 	}
-
-	public long getId() {
-		return id;
-	}
-
-	public String getItemId() {
-		return itemId;
-	}
-
-	public LocalDateTime getRequestTime() {
-		return requestTime;
-	}
-
-	@Override
-	public String toString() {
-		return "FlashSaleReq [id=" + id + ", itemId=" + itemId + ", requestTime=" + requestTime + "]";
-	}
-
 }
