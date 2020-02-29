@@ -53,8 +53,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 			return new FlashSaleResp(itemId, userId, "NoOrder", -2, "stock is unavailable" + ret);
 		}
 
-		// 返回响应
-		return new FlashSaleResp(itemId, userId, "NoOrder", 0, "stock is available" + ret);
+		return new FlashSaleResp(itemId, userId, "NoOrder", 0, "campaign is available" + ret);
 	}
 
 	@Override
@@ -75,7 +74,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 			return new FlashSaleResp(itemId, userId, "NoOrder", -2, "stock is unavailable" + ret);
 		}
 
-		// 2.扣减库存
+		// 2.扣减库存 TODO:捕获异常并作出处理
 		updateStock(itemId, 1);
 
 		// 3.下单
