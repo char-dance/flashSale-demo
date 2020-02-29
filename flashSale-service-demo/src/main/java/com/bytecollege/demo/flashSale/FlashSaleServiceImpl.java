@@ -48,7 +48,11 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 			return new FlashSaleResp(itemId, userId, "NoOrder", -1, "stock is unavailable");
 		}
 
-		// 2.下单
+		// 2.扣减库存
+		stringRedisTemplate.delete(itemId);
+		flashSaleMapper.updateStock(itemId, 1);
+
+		// 3.下单
 		CheckoutReq checkoutReq = new CheckoutReq(itemId, userId);
 		CheckoutResp checkoutResp = checkoutService.checkout(checkoutReq);
 		log.info("========================" + checkoutReq);
@@ -57,10 +61,6 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		if (checkoutResp.getCode() < 0) {
 			return new FlashSaleResp(itemId, userId, checkoutResp.getOrderId(), -2, checkoutResp.getMessage());
 		}
-
-		// 3.扣减库存
-		stringRedisTemplate.delete(itemId);
-		flashSaleMapper.updateStock(itemId, 1);
 
 		// 返回响应
 		return new FlashSaleResp(itemId, userId, checkoutResp.getOrderId(), checkoutResp.getCode(),
