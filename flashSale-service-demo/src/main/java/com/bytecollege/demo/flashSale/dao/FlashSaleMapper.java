@@ -15,6 +15,6 @@ public interface FlashSaleMapper {
 	@Select("select * from t_campaign_item where item_id = #{itemId}")
 	ItemEntity getItem(String itemId);
 
-	@Update("update t_campaign_item set stock = stock - #{stock} where item_id = #{itemId} and stock >= #{stock}")
-	void updateStock(String itemId, int stock);
+	@Update("update t_campaign_item set stock = stock - #{count} where item_id = #{itemId} and stock >= #{count}")
+	void updateStock(String itemId, int count);
 }

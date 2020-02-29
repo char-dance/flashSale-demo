@@ -19,6 +19,22 @@ public class FalshSaleController {
 	@Reference(version = "1.0.0", timeout = 3000)
 	private FlashSaleService flashSaleService;
 
+	// http://localhost:8080/flashSale/check?itemId=1A2B3C4D5E6F&userId=ruanwei
+	@GetMapping("/check")
+	public FlashSaleModel check(FlashSaleCommand command) {
+		log.info("========================" + command);
+
+		FlashSaleReq req = new FlashSaleReq(command.getItemId(), command.getUserId());
+		FlashSaleResp resp = flashSaleService.check(req);
+		log.info("========================" + req);
+		log.info("========================" + resp);
+
+		FlashSaleModel model = new FlashSaleModel(resp.getItemId(), resp.getUserId(), resp.getOrderId(), resp.getCode(),
+				resp.getMessage());
+		log.info("========================" + model);
+		return model;
+	}
+	
 	// http://localhost:8080/flashSale/flash?itemId=1A2B3C4D5E6F&userId=ruanwei
 	@GetMapping("/flash")
 	public FlashSaleModel flash(FlashSaleCommand command) {
