@@ -43,13 +43,18 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		String itemId = req.getItemId();
 		String userId = req.getUserId();
 
-		int stock = checkStock(itemId);
-		if (stock <= 0) {
-			return new FlashSaleResp(itemId, userId, "NoOrder", -1, "stock is unavailable" + stock);
+		int ret = checkStatus(itemId);
+		if (ret <= 0) {
+			return new FlashSaleResp(itemId, userId, "NoOrder", -1, "campaign is unavailable" + ret);
+		}
+
+		ret = checkStock(itemId);
+		if (ret <= 0) {
+			return new FlashSaleResp(itemId, userId, "NoOrder", -2, "stock is unavailable" + ret);
 		}
 
 		// 返回响应
-		return new FlashSaleResp(itemId, userId, "NoOrder", 0, "stock is available" + stock);
+		return new FlashSaleResp(itemId, userId, "NoOrder", 0, "stock is available" + ret);
 	}
 
 	@Override
@@ -62,12 +67,12 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		// 1.检查
 		int ret = checkStatus(itemId);
 		if (ret <= 0) {
-			return new FlashSaleResp(itemId, userId, "NoOrder", -1, "stock is unavailable" + ret);
+			return new FlashSaleResp(itemId, userId, "NoOrder", -1, "campaign is unavailable" + ret);
 		}
 
 		ret = checkStock(itemId);
 		if (ret <= 0) {
-			return new FlashSaleResp(itemId, userId, "NoOrder", -1, "stock is unavailable" + ret);
+			return new FlashSaleResp(itemId, userId, "NoOrder", -2, "stock is unavailable" + ret);
 		}
 
 		// 2.扣减库存
@@ -78,7 +83,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		if (checkoutResp.getCode() < 0) {
 			// 恢复库存, 或者异步补偿
 			updateStock(itemId, -1);
-			return new FlashSaleResp(itemId, userId, checkoutResp.getOrderId(), -3, checkoutResp.getMessage());
+			return new FlashSaleResp(itemId, userId, checkoutResp.getOrderId(), -4, checkoutResp.getMessage());
 		}
 
 		return new FlashSaleResp(itemId, userId, checkoutResp.getOrderId(), 0, "flash sale success");
