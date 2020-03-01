@@ -9,7 +9,7 @@
 		<version>2.2.2.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.bytecollege.demo</groupId>
+	<groupId>com.next.demo</groupId>
 	<artifactId>flashSale-service-demo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>flashSale-service-demo</name>
@@ -56,12 +56,12 @@
 			<version>4.2.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.bytecollege.demo</groupId>
+			<groupId>com.next.demo</groupId>
 			<artifactId>flashSale-api-demo</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>com.bytecollege.demo</groupId>
+			<groupId>com.next.demo</groupId>
 			<artifactId>checkout-api-demo</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>

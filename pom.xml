@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.bytecollege.demo</groupId>
+	<groupId>com.next.demo</groupId>
 	<artifactId>flashSale-demo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -18,7 +18,7 @@
 			<name>ruanwei</name>
 			<email>408775009@@qq.com</email>
 			<url>https://ruanweiqq.github.io/</url>
-			<organization>bytecollege.com</organization>
+			<organization>next.com</organization>
 			<organizationUrl>https://byte-college.github.io</organizationUrl>
 			<roles>
 				<role>author</role>
@@ -29,7 +29,7 @@
 			<name>maohua</name>
 			<email>408775009@@qq.com</email>
 			<url>http://www.maohua.org</url>
-			<organization>bytecollege.com</organization>
+			<organization>next.com</organization>
 			<organizationUrl>https://byte-college.github.io</organizationUrl>
 			<roles>
 				<role>author</role>
