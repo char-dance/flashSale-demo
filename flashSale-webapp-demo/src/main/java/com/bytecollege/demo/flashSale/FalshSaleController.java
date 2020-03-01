@@ -19,12 +19,12 @@ public class FalshSaleController {
 	@Reference(version = "1.0.0", timeout = 3000)
 	private FlashSaleService flashSaleService;
 
-	// http://localhost:8080/flashSale/check?itemId=1A2B3C4D5E6F&userId=ruanwei
+	// http://localhost:8080/flashSale/check?itemId=1A2B3C4D5E6F&CampaignId=1&userId=ruanwei
 	@GetMapping("/check")
 	public FlashSaleModel check(FlashSaleCommand command) {
 		log.info("========================" + command);
 
-		FlashSaleReq req = new FlashSaleReq(command.getItemId(), command.getUserId());
+		FlashSaleReq req = new FlashSaleReq(command.getItemId(), command.getCampaignId(), command.getUserId());
 		FlashSaleResp resp = flashSaleService.check(req);
 		log.info("========================" + req);
 		log.info("========================" + resp);
@@ -34,14 +34,14 @@ public class FalshSaleController {
 		log.info("========================" + model);
 		return model;
 	}
-	
-	// http://localhost:8080/flashSale/flash?itemId=1A2B3C4D5E6F&userId=ruanwei
+
+	// http://localhost:8080/flashSale/flash?itemId=1A2B3C4D5E6F&CampaignId=1&userId=ruanwei
 	@GetMapping("/flash")
 	public FlashSaleModel flash(FlashSaleCommand command) {
 		log.info("========================" + command);
 		int seqId = seq.incrementAndGet();
 
-		FlashSaleReq req = new FlashSaleReq(command.getItemId(), command.getUserId());
+		FlashSaleReq req = new FlashSaleReq(command.getItemId(), command.getCampaignId(), command.getUserId());
 		FlashSaleResp resp = flashSaleService.flash(req);
 		log.info("========================" + req);
 		log.info("========================" + resp);

@@ -8,6 +8,7 @@ import lombok.Data;
 @SuppressWarnings("serial")
 public class FlashSaleResp implements Serializable {
 	private String itemId;
+	private int campaignId;
 	private String userId;
 	private String orderId;
 	private int code;
@@ -20,8 +21,9 @@ public class FlashSaleResp implements Serializable {
 		this.code = -1;
 	}
 
-	public FlashSaleResp(String itemId, String userId, String orderId, int code, String message) {
+	public FlashSaleResp(String itemId, int campaignId, String userId, String orderId, int code, String message) {
 		this.itemId = itemId;
+		this.campaignId = campaignId;
 		this.userId = userId;
 		this.orderId = orderId;
 		this.code = code;

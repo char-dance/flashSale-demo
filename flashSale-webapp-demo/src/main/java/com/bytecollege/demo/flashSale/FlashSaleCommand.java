@@ -6,7 +6,8 @@ import lombok.Data;
 
 @Data
 public class FlashSaleCommand {
-	private String userId;
 	private String itemId;
+	private int campaignId;
+	private String userId;
 	private LocalDateTime requestTime = LocalDateTime.now();
 }
