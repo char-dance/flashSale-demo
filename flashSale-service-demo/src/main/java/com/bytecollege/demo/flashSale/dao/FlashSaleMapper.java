@@ -16,5 +16,5 @@ public interface FlashSaleMapper {
 	ItemEntity getItem(String itemId);
 
 	@Update("update t_campaign_item set stock = stock - #{count} where item_id = #{itemId} and stock >= #{count}")
-	void updateStock(String itemId, int count);
+	int updateStock(String itemId, int count);
 }
