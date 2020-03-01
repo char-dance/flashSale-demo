@@ -1,8 +1,5 @@
 package com.bytecollege.demo.flashSale;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.Resource;
 
 import org.apache.commons.logging.Log;
@@ -11,8 +8,6 @@ import org.apache.dubbo.config.annotation.Reference;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.util.StringUtils;
 
 import com.bytecollege.demo.checkout.CheckoutReq;
 import com.bytecollege.demo.checkout.CheckoutResp;
@@ -25,11 +20,11 @@ import com.bytecollege.demo.flashSale.dao.entity.ItemEntity;
 public class FlashSaleServiceImpl implements FlashSaleService {
 	private static final Log log = LogFactory.getLog(FlashSaleServiceImpl.class);
 
-	//@Autowired
-	//private StringRedisTemplate stringRedisTemplate;
-	
-	// 这里不能用@Autowired
-	@Resource(name="redisTemplate")
+	// @Autowired
+	// private StringRedisTemplate stringRedisTemplate;
+
+	// 这里不能用@Autowired，因为依据名字注入
+	@Resource(name = "redisTemplate")
 	private RedisTemplate<String, Integer> flashSaleRedisTemplate;
 
 	@Autowired
@@ -37,8 +32,6 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 
 	@Reference(version = "1.0.0", timeout = 3000)
 	private CheckoutService checkoutService;
-
-	private static final Map<String, Integer> STOCK_CACHE = new HashMap<>();
 
 	@Override
 	public FlashSaleResp check(FlashSaleReq req) {
@@ -79,18 +72,18 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		String userId = req.getUserId();
 
 		// 1.从缓存中读取活动状态
-		int status = flashSaleRedisTemplate.opsForValue().get("status");
+		Integer status = flashSaleRedisTemplate.opsForValue().get("status");
 		// Integer stock = flashSaleRedisTemplate.opsForValue().get(itemId);
 		log.info("status from cache======================================" + status);
 
 		// 2.缓存未命中，从数据库中读取
-		if (StringUtils.isEmpty(status)) {
+		if (status == null) {
 			CampaignEntity campaignEntity = flashSaleMapper.getCampaign(campaignId);
 			log.info("status from database======================================" + campaignEntity);
 
 			// 3.如果状态不可用，返回
 			if (campaignEntity.getStatus() == 0) {
-				throw new FlashSaleException(-1, "campaign is unavailable", itemId, campaignId, "NoOrder", userId);
+				throw new FlashSaleException(-1, "campaign is unavailable", itemId, campaignId, userId, "NoOrder");
 			}
 
 			// 4.状态值写入缓存
@@ -99,18 +92,18 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		}
 
 		// 1.从缓存中读取商品库存
-		int stock = flashSaleRedisTemplate.opsForValue().get(itemId);
+		Integer stock = flashSaleRedisTemplate.opsForValue().get(itemId);
 		// Integer stock = flashSaleRedisTemplate.opsForValue().get(itemId);
 		log.info("stock from cache======================================" + stock);
 
 		// 2.缓存未命中，从数据库中读取
-		if (StringUtils.isEmpty(stock)) {
+		if (stock == null) {
 			ItemEntity itemEntity = flashSaleMapper.getItem(itemId);
 			log.info("stock from database======================================" + stock);
 
 			// 3.如果状态不可用，返回
 			if (itemEntity.getStock() <= 0) {
-				throw new FlashSaleException(-2, "stock is unavailable", itemId, campaignId, "NoOrder", userId);
+				throw new FlashSaleException(-2, "stock is unavailable", itemId, campaignId, userId, "NoOrder");
 			}
 
 			// 4.库存值写入缓存
@@ -130,7 +123,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 			flashSaleMapper.updateStock(itemId, 1);
 		} catch (Exception e) {
 			// 扣减库存失败，返回
-			throw new FlashSaleException(-3, "reduce stock failed", itemId, campaignId, "NoOrder", userId, e);
+			throw new FlashSaleException(-3, "reduce stock failed", itemId, campaignId, userId, "NoOrder", e);
 		}
 	}
 
@@ -150,8 +143,8 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 			flashSaleMapper.updateStock(itemId, -1);
 
 			// 下单失败，返回
-			throw new FlashSaleException(-4, checkoutResp.getMessage(), itemId, campaignId, checkoutResp.getOrderId(),
-					userId);
+			throw new FlashSaleException(-4, checkoutResp.getMessage(), itemId, campaignId, userId,
+					checkoutResp.getOrderId());
 		}
 	}
 }

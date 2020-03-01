@@ -19,7 +19,7 @@ public class FalshSaleController {
 	@Reference(version = "1.0.0", timeout = 3000)
 	private FlashSaleService flashSaleService;
 
-	// http://localhost:8080/flashSale/check?itemId=1A2B3C4D5E6F&CampaignId=1&userId=ruanwei
+	// http://localhost:8080/flashSale/check?itemId=1A2B3C4D5E6F&campaignId=1&userId=ruanwei
 	@GetMapping("/check")
 	public FlashSaleModel check(FlashSaleCommand command) {
 		log.info("========================" + command);
@@ -35,7 +35,7 @@ public class FalshSaleController {
 		return model;
 	}
 
-	// http://localhost:8080/flashSale/flash?itemId=1A2B3C4D5E6F&CampaignId=1&userId=ruanwei
+	// http://localhost:8080/flashSale/flash?itemId=1A2B3C4D5E6F&campaignId=1&userId=ruanwei
 	@GetMapping("/flash")
 	public FlashSaleModel flash(FlashSaleCommand command) {
 		log.info("========================" + command);
