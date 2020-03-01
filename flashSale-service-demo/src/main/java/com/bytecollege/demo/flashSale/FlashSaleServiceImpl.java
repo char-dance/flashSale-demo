@@ -3,6 +3,8 @@ package com.bytecollege.demo.flashSale;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.dubbo.config.annotation.Reference;
@@ -23,10 +25,11 @@ import com.bytecollege.demo.flashSale.dao.entity.ItemEntity;
 public class FlashSaleServiceImpl implements FlashSaleService {
 	private static final Log log = LogFactory.getLog(FlashSaleServiceImpl.class);
 
-	@Autowired
-	private StringRedisTemplate stringRedisTemplate;
-
-	// @Autowired
+	//@Autowired
+	//private StringRedisTemplate stringRedisTemplate;
+	
+	// 这里不能用@Autowired
+	@Resource(name="redisTemplate")
 	private RedisTemplate<String, Integer> flashSaleRedisTemplate;
 
 	@Autowired
@@ -76,43 +79,43 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		String userId = req.getUserId();
 
 		// 1.从缓存中读取活动状态
-		String status = stringRedisTemplate.opsForValue().get("status");
+		int status = flashSaleRedisTemplate.opsForValue().get("status");
 		// Integer stock = flashSaleRedisTemplate.opsForValue().get(itemId);
 		log.info("status from cache======================================" + status);
 
+		// 2.缓存未命中，从数据库中读取
 		if (StringUtils.isEmpty(status)) {
-			// 2.缓存未命中，从数据库中读取
 			CampaignEntity campaignEntity = flashSaleMapper.getCampaign(campaignId);
 			log.info("status from database======================================" + campaignEntity);
 
+			// 3.如果状态不可用，返回
 			if (campaignEntity.getStatus() == 0) {
-				// 3.如果状态不可用，返回
 				throw new FlashSaleException(-1, "campaign is unavailable", itemId, campaignId, "NoOrder", userId);
 			}
 
 			// 4.状态值写入缓存
-			status = campaignEntity.getStatus() + "";
-			stringRedisTemplate.opsForValue().set("status", status);
+			status = campaignEntity.getStatus();
+			flashSaleRedisTemplate.opsForValue().set("status", status);
 		}
 
 		// 1.从缓存中读取商品库存
-		String stock = stringRedisTemplate.opsForValue().get(itemId);
+		int stock = flashSaleRedisTemplate.opsForValue().get(itemId);
 		// Integer stock = flashSaleRedisTemplate.opsForValue().get(itemId);
 		log.info("stock from cache======================================" + stock);
 
+		// 2.缓存未命中，从数据库中读取
 		if (StringUtils.isEmpty(stock)) {
-			// 2.缓存未命中，从数据库中读取
 			ItemEntity itemEntity = flashSaleMapper.getItem(itemId);
 			log.info("stock from database======================================" + stock);
 
+			// 3.如果状态不可用，返回
 			if (itemEntity.getStock() <= 0) {
-				// 3.如果状态不可用，返回
 				throw new FlashSaleException(-2, "stock is unavailable", itemId, campaignId, "NoOrder", userId);
 			}
 
 			// 4.库存值写入缓存
-			stock = itemEntity.getStock() + "";
-			stringRedisTemplate.opsForValue().set(itemId, stock);
+			stock = itemEntity.getStock();
+			flashSaleRedisTemplate.opsForValue().set(itemId, stock);
 		}
 	}
 
@@ -123,7 +126,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 
 		try {
 			// TODO:区分异常
-			stringRedisTemplate.delete(itemId);
+			flashSaleRedisTemplate.delete(itemId);
 			flashSaleMapper.updateStock(itemId, 1);
 		} catch (Exception e) {
 			// 扣减库存失败，返回
@@ -143,7 +146,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		log.info("========================" + checkoutResp);
 		if (checkoutResp.getCode() < 0) {
 			// 恢复库存, 后面改异步重试
-			stringRedisTemplate.delete(itemId);
+			flashSaleRedisTemplate.delete(itemId);
 			flashSaleMapper.updateStock(itemId, -1);
 
 			// 下单失败，返回
