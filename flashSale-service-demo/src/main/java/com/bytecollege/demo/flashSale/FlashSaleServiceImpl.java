@@ -54,8 +54,13 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		log.info("========================" + req);
 
 		try {
+			// 1.检查秒杀条件
 			preCheck(req);
+			
+			// 2.扣减库存
 			reduceStock(req);
+			
+			// 3.下单
 			checkout(req);
 		} catch (FlashSaleException e) {
 			log.error("flash failed", e);
