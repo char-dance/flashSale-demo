@@ -43,6 +43,10 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 			log.error("check failed", e);
 			return new FlashSaleResp(e.getItemId(), e.getCampaignId(), e.getUserId(), e.getOrderId(), e.getCode(),
 					e.getMessage());
+		} catch (Exception e) {
+			log.error("system error", e);
+			return new FlashSaleResp(req.getItemId(), req.getCampaignId(), req.getUserId(), "NoOrder", -100,
+					e.getMessage());
 		}
 
 		return new FlashSaleResp(req.getItemId(), req.getCampaignId(), req.getUserId(), "NoOrder", 0,
@@ -65,6 +69,10 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		} catch (FlashSaleException e) {
 			log.error("flash failed", e);
 			return new FlashSaleResp(e.getItemId(), e.getCampaignId(), e.getUserId(), e.getOrderId(), e.getCode(),
+					e.getMessage());
+		} catch (Exception e) {
+			log.error("system error", e);
+			return new FlashSaleResp(req.getItemId(), req.getCampaignId(), req.getUserId(), "NoOrder", -100,
 					e.getMessage());
 		}
 
@@ -104,7 +112,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		// 2.2.缓存未命中，从数据库中读取
 		if (stock == null) {
 			ItemEntity itemEntity = flashSaleMapper.getItem(itemId);
-			log.info("stock from database======================================" + stock);
+			log.info("stock from database======================================" + itemEntity);
 
 			// 2.3.如果状态不可用，返回
 			if (itemEntity.getStock() <= 0) {
@@ -122,23 +130,31 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		int campaignId = req.getCampaignId();
 		String userId = req.getUserId();
 
+		boolean success = false;
 		try {
-			boolean success = flashSaleRedisTemplate.delete(itemId);
-
-			// 未成功清除缓存表示之前检查存在问题
-			if (!success) {
-				throw new FlashSaleException(-3, "stock state is inconsistent", itemId, campaignId, userId, "NoOrder");
-			}
-
-			// 匹配记录数量不等于1表示条件存在问题
-			int rows = flashSaleMapper.updateStock(itemId, 1);
-			if (rows != 1) {
-				throw new FlashSaleException(-4, "itemId is inconsistent", itemId, campaignId, userId, "NoOrder");
-			}
+			success = flashSaleRedisTemplate.delete(itemId);
 		} catch (Exception e) {
 			// 扣减库存失败，返回
-			log.error("reduceStock failed", e);
-			throw new FlashSaleException(-5, "reduce stock failed", itemId, campaignId, userId, "NoOrder", e);
+			log.error(e);
+			throw new FlashSaleException(-5, "rpc:clear stock failed", itemId, campaignId, userId, "NoOrder", e);
+		}
+
+		// 未成功清除缓存表示之前检查存在问题
+		if (!success) {
+			throw new FlashSaleException(-6, "clear stock failed", itemId, campaignId, userId, "NoOrder");
+		}
+
+		int rows = 0;
+		try {
+			// 匹配记录数量不等于1表示条件存在问题
+			rows = flashSaleMapper.updateStock(itemId, 1);
+		} catch (Exception e) {
+			// 扣减库存失败，返回
+			log.error(e);
+			throw new FlashSaleException(-7, "rpc:reduce stock failed", itemId, campaignId, userId, "NoOrder", e);
+		}
+		if (rows != 1) {
+			throw new FlashSaleException(-8, "reduce stock failed", itemId, campaignId, userId, "NoOrder");
 		}
 	}
 
@@ -155,9 +171,9 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 			log.info("========================" + checkoutResp);
 		} catch (Exception e) {
 			log.error("checkout failed", e);
-			throw new FlashSaleException(-6, "checkout failed", itemId, campaignId, userId, "NoOrder", e);
+			throw new FlashSaleException(-9, "rpc:checkout failed", itemId, campaignId, userId, "NoOrder", e);
 		}
-		
+
 		// TODO:恢复库存, 后面改异步重试
 		if (checkoutResp.getCode() < 0) {
 			// 这里存在无法恢复的风险
@@ -165,7 +181,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 			flashSaleMapper.updateStock(itemId, -1);
 
 			// 下单失败，返回
-			throw new FlashSaleException(-7, checkoutResp.getMessage(), itemId, campaignId, userId,
+			throw new FlashSaleException(-10, checkoutResp.getMessage(), itemId, campaignId, userId,
 					checkoutResp.getOrderId());
 		}
 	}
