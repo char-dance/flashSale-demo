@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.next.demo.flashSale.FlashSaleReq;
 import com.next.demo.flashSale.FlashSaleResp;
 import com.next.demo.flashSale.FlashSaleService;
+import com.next.demo.flashSale.command.FlashSaleCommand;
+import com.next.demo.flashSale.model.FlashSaleModel;
 
 @RestController
 @RequestMapping("/flashSale")

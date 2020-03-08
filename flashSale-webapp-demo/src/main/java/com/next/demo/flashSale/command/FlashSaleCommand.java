@@ -1,4 +1,4 @@
-package com.next.demo.flashSale;
+package com.next.demo.flashSale.command;
 
 import java.time.LocalDateTime;
 
