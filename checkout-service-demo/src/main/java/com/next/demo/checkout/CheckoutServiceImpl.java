@@ -33,7 +33,7 @@ public class CheckoutServiceImpl implements CheckoutService {
 		int i = (int) (System.nanoTime() % 9);
 		if (i == 8) {
 			code = -10;
-			message = "checkout falied";
+			message = "checkout failed";
 		}
 
 		return new CheckoutResp(req.getItemId(), req.getUserId(), UUID.randomUUID().toString(), code, message);
