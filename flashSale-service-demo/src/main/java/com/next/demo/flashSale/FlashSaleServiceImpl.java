@@ -95,11 +95,14 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		// 1.2.缓存未命中，从数据库中读取
 		if (status == null) {
 			CampaignEntity campaignEntity = flashSaleMapper.getCampaign(campaignId);
-			log.info("status from database======================================" + campaignEntity);
-
+			log.info("campaign from database======================================" + campaignEntity);
+			if (campaignEntity == null) {
+				throw new FlashSaleException(-1, "campaign does not exsit", itemId, campaignId, userId, "NoOrder");
+			}
+			
 			// 1.3.如果状态不可用，返回
 			if (campaignEntity.getStatus() == 0) {
-				throw new FlashSaleException(-1, "campaign is unavailable", itemId, campaignId, userId, "NoOrder");
+				throw new FlashSaleException(-2, "campaign is unavailable", itemId, campaignId, userId, "NoOrder");
 			}
 
 			// 1.4.状态值写入缓存
@@ -115,11 +118,15 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		// 2.2.缓存未命中，从数据库中读取
 		if (stock == null) {
 			ItemEntity itemEntity = flashSaleMapper.getItem(itemId);
-			log.info("stock from database======================================" + itemEntity);
+			log.info("item from database======================================" + itemEntity);
+
+			if (itemEntity == null) {
+				throw new FlashSaleException(-3, "item does not exsit", itemId, campaignId, userId, "NoOrder");
+			}
 
 			// 2.3.如果状态不可用，返回
 			if (itemEntity.getStock() <= 0) {
-				throw new FlashSaleException(-2, "stock is unavailable", itemId, campaignId, userId, "NoOrder");
+				throw new FlashSaleException(-4, "stock is unavailable", itemId, campaignId, userId, "NoOrder");
 			}
 
 			// 2.4.库存值写入缓存
