@@ -26,13 +26,13 @@ public class CheckoutServiceImpl implements CheckoutService {
 			TimeUnit.MILLISECONDS.sleep(100);
 		} catch (InterruptedException e) {
 			log.error("", e);
-			code = -11;
+			code = -200;
 			message = "checkout failed as sleep";
 		}
 
-		int i = (int) (System.nanoTime() % 9);
+		int i = 8;//(int) (System.nanoTime() % 9);
 		if (i == 8) {
-			code = -10;
+			code = -201;
 			message = "checkout failed";
 		}
 

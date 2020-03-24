@@ -75,7 +75,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 					e.getMessage());
 		} catch (Exception e) {
 			log.error("system error", e);
-			return new FlashSaleResp(req.getItemId(), req.getCampaignId(), req.getUserId(), "NoOrder", -100,
+			return new FlashSaleResp(req.getItemId(), req.getCampaignId(), req.getUserId(), "NoOrder", -101,
 					e.getMessage());
 		}
 
@@ -97,12 +97,12 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 			CampaignEntity campaignEntity = flashSaleMapper.getCampaign(campaignId);
 			log.info("campaign from database======================================" + campaignEntity);
 			if (campaignEntity == null) {
-				throw new FlashSaleException(-1, "campaign does not exsit", itemId, campaignId, userId, "NoOrder");
+				throw new FlashSaleException(-102, "campaign does not exsit", itemId, campaignId, userId, "NoOrder");
 			}
 			
 			// 1.3.如果状态不可用，返回
 			if (campaignEntity.getStatus() == 0) {
-				throw new FlashSaleException(-2, "campaign is unavailable", itemId, campaignId, userId, "NoOrder");
+				throw new FlashSaleException(-103, "campaign is unavailable", itemId, campaignId, userId, "NoOrder");
 			}
 
 			// 1.4.状态值写入缓存
@@ -119,14 +119,13 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		if (stock == null) {
 			ItemEntity itemEntity = flashSaleMapper.getItem(itemId);
 			log.info("item from database======================================" + itemEntity);
-
 			if (itemEntity == null) {
-				throw new FlashSaleException(-3, "item does not exsit", itemId, campaignId, userId, "NoOrder");
+				throw new FlashSaleException(-104, "item does not exsit", itemId, campaignId, userId, "NoOrder");
 			}
 
 			// 2.3.如果状态不可用，返回
 			if (itemEntity.getStock() <= 0) {
-				throw new FlashSaleException(-4, "stock is unavailable", itemId, campaignId, userId, "NoOrder");
+				throw new FlashSaleException(-105, "stock is unavailable", itemId, campaignId, userId, "NoOrder");
 			}
 
 			// 2.4.库存值写入缓存
@@ -146,12 +145,12 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		} catch (Exception e) {
 			// 扣减库存失败，返回
 			log.error(e);
-			throw new FlashSaleException(-5, "rpc:clear stock failed", itemId, campaignId, userId, "NoOrder", e);
+			throw new FlashSaleException(-106, "rpc:clear stock failed", itemId, campaignId, userId, "NoOrder", e);
 		}
 
 		// 未成功清除缓存表示之前检查存在问题
 		if (!success) {
-			throw new FlashSaleException(-6, "clear stock failed", itemId, campaignId, userId, "NoOrder");
+			throw new FlashSaleException(-107, "clear stock failed", itemId, campaignId, userId, "NoOrder");
 		}
 
 		int rows = 0;
@@ -161,10 +160,10 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		} catch (Exception e) {
 			// 扣减库存失败，返回
 			log.error(e);
-			throw new FlashSaleException(-7, "rpc:reduce stock failed", itemId, campaignId, userId, "NoOrder", e);
+			throw new FlashSaleException(-108, "rpc:reduce stock failed", itemId, campaignId, userId, "NoOrder", e);
 		}
 		if (rows != 1) {
-			throw new FlashSaleException(-8, "reduce stock failed", itemId, campaignId, userId, "NoOrder");
+			throw new FlashSaleException(-109, "reduce stock failed", itemId, campaignId, userId, "NoOrder");
 		}
 	}
 
@@ -181,17 +180,17 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 			log.info("========================" + checkoutResp);
 		} catch (Exception e) {
 			log.error("checkout failed", e);
-			throw new FlashSaleException(-9, "rpc:checkout failed", itemId, campaignId, userId, "NoOrder", e);
+			throw new FlashSaleException(-110, "rpc:checkout failed", itemId, campaignId, userId, "NoOrder", e);
 		}
 
 		// TODO:恢复库存, 后面改异步重试
 		if (checkoutResp.getCode() < 0) {
 			// 这里存在无法恢复的风险
-			flashSaleRedisTemplate.delete(itemId);
-			flashSaleMapper.updateStock(itemId, -1);
+			// flashSaleRedisTemplate.delete(itemId);
+			// flashSaleMapper.updateStock(itemId, -1);
 
 			// 下单失败，返回
-			throw new FlashSaleException(-10, checkoutResp.getMessage(), itemId, campaignId, userId,
+			throw new FlashSaleException(-111, checkoutResp.getMessage(), itemId, campaignId, userId,
 					checkoutResp.getOrderId());
 		}
 	}
