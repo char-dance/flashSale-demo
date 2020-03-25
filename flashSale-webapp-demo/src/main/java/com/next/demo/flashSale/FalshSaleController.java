@@ -28,7 +28,7 @@ public class FalshSaleController {
 	// http://localhost:8080/flashSale/check?itemId=1A2B3C4D5E6F&campaignId=1&userId=ruanwei
 	@GetMapping("/check")
 	public FlashSaleModel check(FlashSaleCommand command) {
-		log.info("========================" + command);
+		log.info("check========================" + command);
 
 		FlashSaleReq req = new FlashSaleReq(command.getItemId(), command.getCampaignId(), command.getUserId());
 		FlashSaleResp resp = flashSaleService.check(req);
@@ -44,7 +44,7 @@ public class FalshSaleController {
 	// http://localhost:8080/flashSale/flash?itemId=1A2B3C4D5E6F&campaignId=1&userId=ruanwei
 	@GetMapping("/flash")
 	public FlashSaleModel flash(FlashSaleCommand command) {
-		log.info("========================" + command);
+		log.info("flash========================" + command);
 		int seqId = seq.incrementAndGet();
 
 		FlashSaleReq req = new FlashSaleReq(command.getItemId(), command.getCampaignId(), command.getUserId());

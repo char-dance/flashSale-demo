@@ -17,7 +17,7 @@ public class CheckoutServiceImpl implements CheckoutService {
 
 	@Override
 	public CheckoutResp checkout(CheckoutReq req) {
-		log.info("========================" + req);
+		log.info("checkout========================" + req);
 
 		int code = 0;
 		String message = "checkout sucess";
@@ -30,8 +30,8 @@ public class CheckoutServiceImpl implements CheckoutService {
 			message = "checkout failed as sleep";
 		}
 
-		int i = 8;//(int) (System.nanoTime() % 9);
-		if (i == 8) {
+		int i = 0;//(int) (System.nanoTime() % 10);
+		if (i == 9) {
 			code = -201;
 			message = "checkout failed";
 		}

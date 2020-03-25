@@ -38,7 +38,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 
 	@Override
 	public FlashSaleResp check(FlashSaleReq req) {
-		log.info("========================" + req);
+		log.info("check========================" + req);
 
 		try {
 			preCheck(req);
@@ -58,7 +58,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 
 	@Override
 	public FlashSaleResp flash(FlashSaleReq req) {
-		log.info("========================" + req);
+		log.info("flash========================" + req);
 
 		try {
 			// 1.检查秒杀条件
@@ -90,12 +90,12 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		// 1.1.从缓存中读取活动状态
 		Integer status = flashSaleRedisTemplate.opsForValue().get("status");
 		// Integer stock = flashSaleRedisTemplate.opsForValue().get(itemId);
-		log.info("status from cache======================================" + status);
+		log.info("status from cache " + status);
 
 		// 1.2.缓存未命中，从数据库中读取
 		if (status == null) {
 			CampaignEntity campaignEntity = flashSaleMapper.getCampaign(campaignId);
-			log.info("campaign from database======================================" + campaignEntity);
+			log.info("campaign from database " + campaignEntity);
 			if (campaignEntity == null) {
 				throw new FlashSaleException(-102, "campaign does not exsit", itemId, campaignId, userId, "NoOrder");
 			}
@@ -118,7 +118,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 		// 2.2.缓存未命中，从数据库中读取
 		if (stock == null) {
 			ItemEntity itemEntity = flashSaleMapper.getItem(itemId);
-			log.info("item from database======================================" + itemEntity);
+			log.info("item from database " + itemEntity);
 			if (itemEntity == null) {
 				throw new FlashSaleException(-104, "item does not exsit", itemId, campaignId, userId, "NoOrder");
 			}
@@ -148,15 +148,17 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 			throw new FlashSaleException(-106, "rpc:clear stock failed", itemId, campaignId, userId, "NoOrder", e);
 		}
 
-		// 未成功清除缓存表示之前检查存在问题
+		// 并发时这里就有问题
 		if (!success) {
-			throw new FlashSaleException(-107, "clear stock failed", itemId, campaignId, userId, "NoOrder");
+			log.info("success========================" + success);
+			//throw new FlashSaleException(-107, "clear stock failed", itemId, campaignId, userId, "NoOrder");
 		}
 
 		int rows = 0;
 		try {
 			// 匹配记录数量不等于1表示条件存在问题
 			rows = flashSaleMapper.updateStock(itemId, 1);
+			log.info("rows========================" + rows);
 		} catch (Exception e) {
 			// 扣减库存失败，返回
 			log.error(e);
@@ -190,7 +192,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 			// flashSaleMapper.updateStock(itemId, -1);
 
 			// 下单失败，返回
-			throw new FlashSaleException(-111, checkoutResp.getMessage(), itemId, campaignId, userId,
+			throw new FlashSaleException(checkoutResp.getCode(), checkoutResp.getMessage(), itemId, campaignId, userId,
 					checkoutResp.getOrderId());
 		}
 	}
